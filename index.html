@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Birthday</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.9.1/gsap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/page-flip/dist/js/page-flip.browser.min.js"></script>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Press+Start+2P&family=Cormorant+Garamond:ital,wght@1,700&display=swap"
+    rel="stylesheet">
+
+  <style>
+    body {
+      background-color: black;
+      margin: 0;
+      overflow: hidden;
+    }
+
+    #starfield {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: -10;
+    }
+
+    #book-wrapper {
+      position: fixed;
+      inset: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 10;
+    }
+
+    #flip-book {
+      opacity: 0;
+      visibility: hidden;
+      transition: transform 1s ease-in-out;
+      zoom: 1.15;
+    }
+
+    /* Dynamic centering classes for the 3 states of the book */
+    .book-closed-front {
+      transform: translateX(-200px);
+    }
+
+    .book-opened {
+      transform: translateX(0);
+    }
+
+    .book-closed-back {
+      transform: translateX(-300px);
+    }
+
+    .page {
+      background-color: transparent !important;
+      border: none !important;
+    }
+
+    .page-stack-right {
+      box-shadow:
+        1px 1px 0 #e3d1b8, 2px 2px 0 #c4b094, 3px 3px 0 #e3d1b8,
+        4px 4px 0 #c4b094, 5px 5px 0 #e3d1b8, 6px 6px 0 #c4b094,
+        15px 15px 25px rgba(0, 0, 0, 0.8);
+    }
+
+    .page-stack-left {
+      box-shadow:
+        -1px 1px 0 #e3d1b8, -2px 2px 0 #c4b094, -3px 3px 0 #e3d1b8,
+        -4px 4px 0 #c4b094, -5px 5px 0 #e3d1b8, -6px 6px 0 #c4b094,
+        -15px 15px 25px rgba(0, 0, 0, 0.8);
+    }
+  </style>
+</head>
+
+<body>
+
+  <canvas id="starfield"></canvas>
+
+  <div id="book-wrapper">
+
+    <div id="click-prompt"
+      class="absolute bottom-[10%] left-0 w-full text-center text-[#ffebba] text-xs sm:text-sm pointer-events-none opacity-0 invisible z-50"
+      style="font-family: 'Press Start 2P', cursive; text-shadow: 2px 2px 0px #000;">
+      Click the book to open it
+    </div>
+
+    <div id="turn-prompt"
+      class="absolute left-[14%] top-1/2 -translate-y-1/2 text-[#ffebba] text-xs sm:text-sm pointer-events-none opacity-0 invisible leading-loose z-50 text-center"
+      style="font-family: 'Press Start 2P', cursive; text-shadow: 2px 2px 0px #000; max-width: 130px;">
+      Click the pages to turn them
+    </div>
+
+    <div id="close-prompt"
+      class="absolute bottom-[10%] left-0 w-full text-center text-[#ffebba] text-xs sm:text-sm pointer-events-none opacity-0 invisible z-50"
+      style="font-family: 'Press Start 2P', cursive; text-shadow: 2px 2px 0px #000;">
+      Please close the book
+    </div>
+
+    <div id="thankyou-message" class="absolute opacity-0 invisible z-50 pointer-events-none"
+      style="top: 25%; left: 45%; width: 28%; font-family: 'Press Start 2P', cursive; color: #ffebba; text-shadow: 2px 2px 0px #000; text-align: center;">
+      <div style="font-size: 28px; line-height: 1.8;">Thank you for reading my first ever book</div>
+      <div style="font-size: 20px; margin-top: 10px; white-space: nowrap;">Hope you liked it :)</div>
+      <img src="Cat_Love _GIF.gif"
+        style="margin-top: 16px; width: 160px; height: auto; display: block; margin-left: auto; margin-right: auto;">
+    </div>
+
+    <div id="flip-book" class="book-closed-front">
+
+      <div class="page page-cover page-hard" data-density="hard">
+        <div class="w-full h-full overflow-hidden">
+          <img src="book.png" class="w-full h-full object-fill">
+        </div>
+      </div>
+
+      <div class="page page-cover page-hard" data-density="hard">
+        <div class="relative w-full h-full overflow-hidden">
+          <img src="backside of front.jpg" class="absolute inset-0 w-full h-full object-fill">
+          <div class="absolute top-0 right-0 w-16 h-full bg-gradient-to-l from-black/80 to-transparent z-10"></div>
+        </div>
+      </div>
+
+      <div class="page" data-density="soft">
+        <div class="relative w-full h-full overflow-hidden bg-[#2a170d]">
+          <img src="backside of front.jpg" class="absolute inset-0 w-full h-full object-fill brightness-75"
+            style="transform: scaleX(-1);">
+          <div class="absolute top-0 left-0 w-12 h-full bg-gradient-to-r from-black/80 to-transparent z-0"></div>
+          <div class="absolute top-4 bottom-4 left-0 right-4 page-stack-right z-10 border-l border-[#8c7a5c]"
+            style="background-image: url('paper.jfif'); background-size: cover;">
+            <div class="absolute top-0 left-0 w-12 h-full bg-gradient-to-r from-black/30 to-transparent"></div>
+            <div class="p-8 h-full flex flex-col justify-between items-center text-[#3a2112] text-center w-full">
+              <div class="flex-grow flex flex-col justify-start items-center w-full pt-16">
+                <div style="font-family: 'Great Vibes', cursive; line-height: 1; font-size: 56px; letter-spacing: 1px;">
+                  <div>Baddie</div>
+                  <div style="font-size: 40px;">e</div>
+                  <div>Hyderabad</div>
+                </div>
+                <div
+                  style="font-family: 'Playfair Display', serif; font-size: 22px; margin-top: 15px; line-height: 1; font-weight: 700; font-style: italic; letter-spacing: 1.5px;">
+                  Sakina Khan
+                </div>
+              </div>
+              <div class="pb-10" style="font-family: 'Playfair Display', serif;">
+                <div style="font-size: 14px; line-height: 1.2; font-style: italic; color: #5a3a22;">Written by</div>
+                <div style="font-size: 20px; line-height: 1.3; font-weight: 700; letter-spacing: 1px;">Ali Hussain</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="page" data-density="soft">
+        <div class="relative w-full h-full overflow-hidden bg-[#2a170d]">
+          <img src="backside of front.jpg" class="absolute inset-0 w-full h-full object-fill brightness-75">
+          <div class="absolute top-0 right-0 w-12 h-full bg-gradient-to-l from-black/80 to-transparent z-0"></div>
+          <div class="absolute top-4 bottom-4 left-4 right-0 page-stack-left z-10 border-r border-[#8c7a5c]"
+            style="background-image: url('paper.jfif'); background-size: cover;">
+            <div class="absolute top-0 right-0 w-12 h-full bg-gradient-to-l from-black/30 to-transparent"></div>
+
+            <div class="relative z-20 p-8 h-full flex flex-col justify-center items-center text-[#3a2112]">
+
+              <div class="mb-6 relative" style="
+                  background: #4a2e1b;
+                  padding: 5px;
+                  box-shadow: 
+                    2px 5px 12px rgba(0,0,0,0.5),
+                    inset 1px 1px 2px rgba(255,255,255,0.15),
+                    inset -1px -1px 3px rgba(0,0,0,0.5);
+                  border: 1px solid #24140a;
+                  border-radius: 2px;
+                ">
+                <img src="sak_pfp.jpeg" class="max-w-[200px] max-h-[240px] w-auto h-auto object-contain block m-0"
+                  style="border: 1px solid #111; background-color: #1a0f05;" alt="Sakina">
+              </div>
+
+              <div
+                style="font-family: 'Great Vibes', cursive; font-size: 28px; color: #3a2112; text-align: center; line-height: 1.2; white-space: nowrap;">
+                Baddie e Hyderabad
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="page" data-density="soft">
+        <div class="relative w-full h-full overflow-hidden bg-[#2a170d]">
+          <img src="backside of front.jpg" class="absolute inset-0 w-full h-full object-fill brightness-75"
+            style="transform: scaleX(-1);">
+          <div class="absolute top-0 left-0 w-12 h-full bg-gradient-to-r from-black/80 to-transparent z-0"></div>
+          <div class="absolute top-4 bottom-4 left-0 right-4 page-stack-right z-10 border-l border-[#8c7a5c]"
+            style="background-image: url('paper.jfif'); background-size: cover;">
+            <div class="absolute top-0 left-0 w-12 h-full bg-gradient-to-r from-black/30 to-transparent"></div>
+
+            <div class="relative z-20 px-5 py-5 h-full flex flex-col justify-start items-center text-[#3a2112] w-full">
+
+              <div
+                style="font-family: 'Playfair Display', serif; font-size: 13px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: #5a3a22; margin-bottom: 2px; text-align: center;">
+                Chapter 1
+              </div>
+              <div
+                style="font-family: 'Great Vibes', cursive; font-size: 32px; line-height: 1; color: #3a2112; text-align: center; margin-bottom: 6px;">
+                Baddie
+              </div>
+
+              <div
+                style="font-family: 'Playfair Display', serif; font-size: 10.5px; line-height: 1.35; color: #2a170d; text-align: justify; padding: 0 2px;">
+                <p style="margin-bottom: 5px;"><span class="font-bold">Dear Readers,</span><br>
+                  Throughout your life, you may have turned the pages of hundreds of books, but I am absolutely sure you
+                  have never come across a tale quite like this one.</p>
+
+                <p style="margin-bottom: 5px;">Tell me, what comes to mind when you hear the term "baddie"? Simply put,
+                  a baddie is an effortlessly stunning, fiercely confident girl who always looks flawless and owns her
+                  power.</p>
+
+                <p style="margin-bottom: 5px;"><span class="italic font-bold">Baddie e Hyderabad.</span> Baddie e
+                  Hyderabad, also known as Sakina Khan, is the ultimate baddie of the city. To truly describe her beauty
+                  requires the golden words once reserved for the magnificent queens of antiquity. She possesses a
+                  majestic radiance that rivals the glow of the moon on a cloudless night. With a countenance that
+                  commands breathless reverence and an elegance that flows like spun silk, her visage is nothing short
+                  of imperial. She does not merely exist in a space; she reigns over it, draped in a breathtaking
+                  grandeur that leaves the world entirely spellbound.</p>
+
+                <p>Just cast your eyes upon the portrait gracing the opposite page. There sits the Baddie e Hyderabad in
+                  all her effortless glory. Notice the cascade of her dark, silken waves framing a face that seems
+                  sculpted by the very hands of art. Even in the quiet, dim warmth of an ordinary room, she radiates an
+                  ethereal glow, her mere presence transforming the space into a royal court. There is a serene,
+                  sovereign grace in her posture—a quiet confidence that needs no introduction. With a gaze that holds a
+                  captivating depth and a delicate, flawless charm that defies mortal comprehension, she proves that
+                  true majesty requires no crown; it is carried entirely in her aura.</p>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="page" data-density="soft">
+        <div class="relative w-full h-full overflow-hidden bg-[#2a170d]">
+          <img src="backside of front.jpg" class="absolute inset-0 w-full h-full object-fill brightness-75">
+          <div class="absolute top-0 right-0 w-12 h-full bg-gradient-to-l from-black/80 to-transparent z-0"></div>
+          <div class="absolute top-4 bottom-4 left-4 right-0 page-stack-left z-10 border-r border-[#8c7a5c]"
+            style="background-image: url('paper.jfif'); background-size: cover;">
+            <div class="absolute top-0 right-0 w-12 h-full bg-gradient-to-l from-black/30 to-transparent"></div>
+
+            <div class="relative z-20 p-8 h-full flex flex-col justify-center items-center text-[#3a2112]">
+
+              <div class="mb-6 relative" style="
+                  background: #4a2e1b;
+                  padding: 5px;
+                  box-shadow: 
+                    2px 5px 12px rgba(0,0,0,0.5),
+                    inset 1px 1px 2px rgba(255,255,255,0.15),
+                    inset -1px -1px 3px rgba(0,0,0,0.5);
+                  border: 1px solid #24140a;
+                  border-radius: 2px;
+                ">
+                <img src="baby_sak.jpeg" class="max-w-[200px] max-h-[240px] w-auto h-auto object-contain block m-0"
+                  style="border: 1px solid #111; background-color: #1a0f05;" alt="Baby Sakina">
+              </div>
+
+              <div class="mt-2"
+                style="font-family: 'Playfair Display', serif; font-size: 12px; font-weight: 700; font-style: italic; color: #3a2112; text-align: center; line-height: 1.3; padding: 0 10px;">
+                <div style="margin-bottom: 3px;">This cute baby is 21 now!</div>
+                <div style="word-break: break-all;">dhfhfuhdjfdhjfhdjh</div>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="page" data-density="soft">
+        <div class="relative w-full h-full overflow-hidden bg-[#2a170d]">
+          <img src="backside of front.jpg" class="absolute inset-0 w-full h-full object-fill brightness-75"
+            style="transform: scaleX(-1);">
+          <div class="absolute top-0 left-0 w-12 h-full bg-gradient-to-r from-black/80 to-transparent z-0"></div>
+          <div class="absolute top-4 bottom-4 left-0 right-4 page-stack-right z-10 border-l border-[#8c7a5c]"
+            style="background-image: url('paper.jfif'); background-size: cover;">
+            <div class="absolute top-0 left-0 w-12 h-full bg-gradient-to-r from-black/30 to-transparent"></div>
+            <div
+              class="relative z-20 px-4 pt-6 pb-2 h-full flex flex-col justify-start items-center text-[#3a2112] w-full">
+              <div
+                style="font-family: 'Playfair Display', serif; font-size: 13px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: #5a3a22; margin-bottom: 6px; text-align: center;">
+                Chapter 2
+              </div>
+              <div
+                style="font-family: 'Great Vibes', cursive; font-size: 32px; line-height: 1; color: #3a2112; text-align: center; margin-bottom: 6px;">
+                The Girl Behind the Name
+              </div>
+
+              <div
+                style="font-family: 'Playfair Display', serif; font-size: 10px; line-height: 1.3; color: #2a170d; text-align: justify; padding: 0; width: 100%;">
+                <p style="margin-bottom: 5px;">Underneath the grand title and the flawless aura lies a story that began
+                  on the 5th of April, 2005. On this day, the historic city of Hyderabad welcomed a magnificent new
+                  light when Sakina Khan was born, arriving as a profound blessing to her beloved parents, Omar Ali Khan
+                  and Farheen Ghani.</p>
+
+                <p style="margin-bottom: 5px;">Even in her earliest years, Sakina was utterly captivating. She was a
+                  wonderfully radiant child, possessing a cute, innocent charm that could easily melt the sternest of
+                  hearts. Yet, behind that angelic smile lay a delightfully notorious spirit. She was a little whirlwind
+                  of playful mischief, always keeping her family on their toes with her clever antics and bright,
+                  boundless energy.</p>
+
+                <p style="margin-bottom: 5px;">But perhaps her most defining trait—one that blossomed in childhood and
+                  remains her greatest crown today—is her golden heart. To her friends, she has always been a fiercely
+                  cherished treasure. Deeply loved by all who know her, Sakina is the kind of companion who is simply
+                  always there, standing as an unshakeable pillar of love and support for those lucky enough to be in
+                  her inner circle.</p>
+
+                <p style="margin-bottom: 5px;">As she grew, so did her adventurous soul. She possesses a deep love for
+                  exploring the world alongside her parents, finding joy in every journey they take together. Yet, the
+                  bond she shares with her mother is something truly extraordinary. Far beyond a traditional
+                  relationship, her mother is her absolute best friend and closest confidante. Whether they are
+                  uncovering hidden gems in the city or simply enjoying life's quiet moments, barely a day goes by
+                  without the two of them embarking on some beautiful new endeavor together.</p>
+
+                <p>This radiant energy naturally spills over into her friendships. When she is not side-by-side with her
+                  mother, she can usually be found creating absolute magic with her two dearest friends, Juweria and
+                  Zara. Together, this dynamic trio is an unstoppable force of joy and laughter. They are forever
+                  dreaming up something incredibly fun to do, turning even the most ordinary afternoons into
+                  unforgettable adventures and proving that a true queen is only as strong as the brilliant circle she
+                  keeps.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="page" data-density="soft">
+        <div class="relative w-full h-full overflow-hidden bg-[#2a170d]">
+          <img src="backside of front.jpg" class="absolute inset-0 w-full h-full object-fill brightness-75">
+          <div class="absolute top-0 right-0 w-12 h-full bg-gradient-to-l from-black/80 to-transparent z-0"></div>
+          <div class="absolute top-4 bottom-4 left-4 right-0 page-stack-left z-10 border-r border-[#8c7a5c]"
+            style="background-image: url('paper.jfif'); background-size: cover;">
+            <div class="absolute top-0 right-0 w-12 h-full bg-gradient-to-l from-black/30 to-transparent"></div>
+
+            <div class="relative z-20 p-8 h-full flex flex-col justify-center items-center text-[#3a2112]">
+
+              <div class="mb-6 relative" style="
+                  background: #4a2e1b;
+                  padding: 5px;
+                  box-shadow: 
+                    2px 5px 12px rgba(0,0,0,0.5),
+                    inset 1px 1px 2px rgba(255,255,255,0.15),
+                    inset -1px -1px 3px rgba(0,0,0,0.5);
+                  border: 1px solid #24140a;
+                  border-radius: 2px;
+                ">
+                <img src="sharmari.jpeg" class="max-w-[200px] max-h-[240px] w-auto h-auto object-contain block m-0"
+                  style="border: 1px solid #111; background-color: #1a0f05;" alt="Sakina">
+              </div>
+
+              <div class="mt-2"
+                style="font-family: 'Playfair Display', serif; font-size: 12px; font-weight: 700; font-style: italic; color: #3a2112; text-align: center; line-height: 1.3; padding: 0 10px;">
+                <div>I mean just look at this beauty</div>
+                <div>SHE IS SO KHUBSURAT MASHALLAH AAAAAAAAAAAA</div>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <div class="page" data-density="soft">
+        <div class="relative w-full h-full overflow-hidden bg-[#2a170d]">
+          <img src="backside of front.jpg" class="absolute inset-0 w-full h-full object-fill brightness-75"
+            style="transform: scaleX(-1);">
+          <div class="absolute top-0 left-0 w-12 h-full bg-gradient-to-r from-black/80 to-transparent z-0"></div>
+          <div class="absolute top-4 bottom-4 left-0 right-4 page-stack-right z-10 border-l border-[#8c7a5c]"
+            style="background-image: url('paper.jfif'); background-size: cover;">
+            <div class="absolute top-0 left-0 w-12 h-full bg-gradient-to-r from-black/30 to-transparent"></div>
+            <div
+              class="relative z-20 px-4 pt-6 pb-2 h-full flex flex-col justify-start items-center text-[#3a2112] w-full">
+              <div
+                style="font-family: 'Playfair Display', serif; font-size: 13px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: #5a3a22; margin-bottom: 6px; text-align: center;">
+                Chapter 3
+              </div>
+              <div
+                style="font-family: 'Great Vibes', cursive; font-size: 32px; line-height: 1; color: #3a2112; text-align: center; margin-bottom: 6px;">
+                A Mind of Brilliance, A Heart of Gold
+              </div>
+
+              <div
+                style="font-family: 'Playfair Display', serif; font-size: 10px; line-height: 1.3; color: #2a170d; text-align: justify; padding: 0; width: 100%;">
+                <p style="margin-bottom: 5px;">To truly know Sakina is to understand that her captivating beauty is
+                  merely the first layer of her majesty. Beneath that flawless exterior lies a mind of striking
+                  brilliance. Excellence is simply her standard. In the classroom, her intellect shines effortlessly,
+                  driven by a fiercely hardworking spirit that turns every challenge into a resounding triumph.</p>
+
+                <p style="margin-bottom: 5px;">When she steps away from her academic conquests, her passions are equally
+                  extraordinary. On the badminton court, she is an absolute force of nature—striking with a brilliant,
+                  fierce precision that commands both respect and awe. Yet, she is just as comfortable traversing
+                  entirely different universes from the comfort of a quiet room. A devoted connoisseur of literature,
+                  she has journeyed through over two hundred books. From the magical realms of fantasy to the
+                  pulse-pounding mysteries of thrillers, she possesses a vivid imagination fueled by the written word.
+                </p>
+
+                <p style="margin-bottom: 5px;">Her boundless talents even extend into the culinary arts, where she
+                  reigns as an exceptional chef. She has a deep love for brewing her very own coffee, mastering the
+                  perfect, rich cup with the exact same artistry she applies to everything else. And to taste her
+                  legendary tiramisu is to experience pure perfection—a heavenly, sweet masterpiece that leaves everyone
+                  utterly craving more. As if her real-world talents were not impressive enough, her digital aura is
+                  equally flawless. She is the ultimate curator of aesthetics, maintaining a sexy, immaculate Pinterest
+                  presence that perfectly captures her elite, unmatched eye for style.</p>
+
+                <p>Yet, of all her extraordinary traits, it is the pure gold of her heart that truly sets her apart.
+                  Sakina possesses a kindness that knows absolutely no bounds. She is a genuinely good soul, moving
+                  through life with a deep compassion and warmth that touches everyone she meets. In a world that can
+                  often be cold, her kind-hearted nature is a comforting fire, proving that the most beautiful thing
+                  about the Baddie e Hyderabad is, and always will be, her beautiful soul.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="page" data-density="soft">
+        <div class="relative w-full h-full overflow-hidden bg-[#2a170d]">
+          <img src="backside of front.jpg" class="absolute inset-0 w-full h-full object-fill brightness-75">
+          <div class="absolute top-0 right-0 w-12 h-full bg-gradient-to-l from-black/80 to-transparent z-0"></div>
+          <div class="absolute top-4 bottom-4 left-4 right-0 page-stack-left z-10 border-r border-[#8c7a5c]"
+            style="background-image: url('paper.jfif'); background-size: cover;">
+            <div class="absolute top-0 right-0 w-12 h-full bg-gradient-to-l from-black/30 to-transparent"></div>
+
+            <div class="relative z-20 p-8 h-full flex flex-col justify-center items-center text-[#3a2112]">
+
+              <div class="mb-6 relative" style="
+                  background: #4a2e1b;
+                  padding: 5px;
+                  box-shadow: 
+                    2px 5px 12px rgba(0,0,0,0.5),
+                    inset 1px 1px 2px rgba(255,255,255,0.15),
+                    inset -1px -1px 3px rgba(0,0,0,0.5);
+                  border: 1px solid #24140a;
+                  border-radius: 2px;
+                ">
+                <img src="sakina.png" class="max-w-[200px] max-h-[240px] w-auto h-auto object-contain block m-0"
+                  style="border: 1px solid #111; background-color: #1a0f05;" alt="Sakina">
+              </div>
+
+              <div class="mt-2"
+                style="font-family: 'Playfair Display', serif; font-size: 12px; font-weight: 700; font-style: italic; color: #3a2112; text-align: center; line-height: 1.3; padding: 0 10px;">
+                Sakina Khan more like Sakina Sardothien. Yes I had to read your favourite book to know this , and no
+                wonder it is fantastic book.
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="page" data-density="soft">
+        <div class="relative w-full h-full overflow-hidden bg-[#2a170d]">
+          <img src="backside of front.jpg" class="absolute inset-0 w-full h-full object-fill brightness-75"
+            style="transform: scaleX(-1);">
+          <div class="absolute top-0 left-0 w-12 h-full bg-gradient-to-r from-black/80 to-transparent z-0"></div>
+          <div class="absolute top-4 bottom-4 left-0 right-4 page-stack-right z-10 border-l border-[#8c7a5c]"
+            style="background-image: url('paper.jfif'); background-size: cover;">
+            <div
+              class="relative z-20 px-4 pt-6 pb-2 h-full flex flex-col justify-start items-center text-[#3a2112] w-full">
+              <div
+                style="font-family: 'Playfair Display', serif; font-size: 13px; font-weight: 700; letter-spacing: 3px; text-transform: uppercase; color: #5a3a22; margin-bottom: 6px; text-align: center;">
+                Chapter 4
+              </div>
+              <div
+                style="font-family: 'Great Vibes', cursive; font-size: 32px; line-height: 1; color: #3a2112; text-align: center; margin-bottom: 6px;">
+                Rattling the Stars
+              </div>
+
+              <div
+                style="font-family: 'Playfair Display', serif; font-size: 10.2px; line-height: 1.28; color: #2a170d; text-align: justify; padding: 0; width: 100%;">
+                <p style="margin-bottom: 5px;">They say a reader lives a thousand lives before they die. Through the
+                  epic, sprawling pages of her favorite fantasy worlds, Sakina has journeyed across empires and
+                  witnessed legends unfold. But what she might not realize is that the very magic she admires in those
+                  realms exists right within her own soul.</p>
+
+                <p style="margin-bottom: 5px;">Much like Celaena Sardothien, Sakina walks into any room knowing exactly
+                  who she is—radiating a fierce, effortless confidence and an unyielding spirit that simply refuses to
+                  bow. She shares that exact same elite appreciation for the finer things in life: a captivating stack
+                  of books, a perfectly brewed cup of coffee, and a completely flawless aesthetic. She is the
+                  undisputed, radiant sovereign of Hyderabad. She possesses the fierce loyalty of friends who would
+                  follow her to whatever end, and the kind of breathtaking presence that could easily rattle the stars.
+                  When the world attempts to test her, she does not flinch; she simply flashes a knowing smile, adjusts
+                  her crown, and conquers whatever lies ahead.</p>
+
+                <p style="margin-bottom: 5px;">And so, as the pages of this particular book come to a close, Sakina's
+                  real story continues to unfold. She steps into tomorrow with a dawn of even greater majesty, armed
+                  with her brilliant mind, her golden heart, and the fiery, unstoppable soul of a true queen.</p>
+
+                <p style="margin-bottom: 5px;">To the Baddie e Hyderabad. To the girl behind the name. May your reign be
+                  long, your coffee always perfectly brewed, and your life more glorious than any fantasy novel ever
+                  written.</p>
+
+                <p style="margin-bottom: 5px; font-style: italic; font-weight: 700;">You do not yield.</p>
+
+                <p>But as any true reader knows, the best sagas never end with just one volume. Keep your eyes on the
+                  stars... the next book in the magnificent life of Sakina is already waiting to be written. Stay tuned.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="page" data-density="soft">
+        <div class="relative w-full h-full overflow-hidden bg-[#2a170d]">
+          <img src="backside of front.jpg" class="absolute inset-0 w-full h-full object-fill brightness-75">
+          <div class="absolute top-0 right-0 w-12 h-full bg-gradient-to-l from-black/80 to-transparent z-0"></div>
+          <div class="absolute top-4 bottom-4 left-4 right-0 page-stack-left z-10 border-r border-[#8c7a5c]"
+            style="background-image: url('paper.jfif'); background-size: cover;">
+            <div
+              class="relative z-20 px-5 pt-8 pb-5 h-full flex flex-col justify-start items-center text-[#3a2112] w-full">
+              <div style="
+                font-family: 'Cormorant Garamond', serif;
+                font-size: 26px;
+                font-weight: 700;
+                font-style: italic;
+                color: #3a2112;
+                text-align: center;
+                letter-spacing: 0.5px;
+                white-space: nowrap;
+                margin-bottom: 18px;
+                border-bottom: 1px solid #8c7a5c;
+                padding-bottom: 10px;
+                width: 100%;
+              ">A Final Word From The Writer</div>
+
+              <div
+                style="font-family: 'Playfair Display', serif; font-size: 11px; line-height: 1.45; color: #2a170d; width: 100%; overflow: hidden;">
+                <p
+                  style="margin-bottom: 6px; font-weight: 700; font-size: 15px; text-align: center; white-space: nowrap;">
+                  HAPPY BIRTHDAY SAKINAAAAAAA!!!!</p>
+                <img src="sak5.jpeg"
+                  style="float: right; width: 155px; height: auto; object-fit: contain; margin-left: 8px; margin-bottom: 6px;">
+                <p style="margin-bottom: 5px; text-align: justify;">Damn man 21!!! Mother woman is more mothery now. Ab
+                  mein kya hi bolu tere liye, jitna bolu utna kam hai. TU BEST HAI YURR — THE ABSOLUTE GOAT.</p>
+                <p style="margin-bottom: 5px; text-align: justify;">You are the bestest friend that I can ever get. You
+                  are kind, so intelligent, caring, a woman with a golden heart and most importantly always there for me
+                  whenever I need you — there to support me and give genuine, best advices.</p>
+                <p style="margin-bottom: 5px; text-align: justify;">Kya kya nahi karsakthi tu, sab mein best hai
+                  mashallah. Ab 21 ki hogai hai — badi hoja, bacche chale karna chorde. A year closer to shaadi
+                  hahahahahh JK</p>
+                <p style="margin-bottom: 5px; text-align: justify;">Dono ki ab legal drinking age hogai, party karne
+                  jayenge clubs mein dono full maze.</p>
+                <p style="margin-bottom: 5px; text-align: justify;">Allah bless you with good health, wealth and pure
+                  duas. Khool ke ameen. That's all I had to say for now.</p>
+                <p style="font-weight: 700; font-style: italic; margin-bottom: 2px; text-align: left;">HAPPY BIRTHDAY
+                  ONCE AGAIN SAKKU.</p>
+                <p style="font-weight: 700; text-align: left;">Love you so much. ♡</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="page page-cover page-hard" data-density="hard">
+        <div class="relative w-full h-full overflow-hidden">
+          <img src="backside of front.jpg" class="absolute inset-0 w-full h-full object-fill"
+            style="transform: scaleX(-1);">
+          <div class="absolute top-0 left-0 w-16 h-full bg-gradient-to-r from-black/80 to-transparent z-10"></div>
+        </div>
+      </div>
+
+      <div class="page page-cover page-hard" data-density="hard">
+        <div class="w-full h-full overflow-hidden">
+          <img src="back-cover.jpg" class="w-full h-full object-fill">
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    // --- STARFIELD LOGIC ---
+    const canvas = document.getElementById('starfield');
+    const ctx = canvas.getContext('2d');
+    const numStars = 15000; const stars = []; const maxDepth = 1500; const speed = 2;
+    function initStar(s) { s.baseSize = Math.random() * 1.2 + 0.5; s.baseOpacity = Math.random() * 0.8 + 0.2; s.color = '#ffffff'; s.z = Math.random() * maxDepth; s.x = (Math.random() - 0.5) * window.innerWidth * 1.5; s.y = (Math.random() - 0.5) * window.innerHeight * 1.5; }
+    for (let i = 0; i < numStars; i++) { const s = {}; initStar(s); stars.push(s); }
+    function resize() { canvas.width = window.innerWidth; canvas.height = window.innerHeight; }
+    window.addEventListener('resize', resize); resize();
+    function animate() { ctx.clearRect(0, 0, canvas.width, canvas.height); const centerX = canvas.width / 2; const centerY = canvas.height / 2; const focalLength = canvas.width; for (let i = 0; i < numStars; i++) { const s = stars[i]; s.z -= speed; if (s.z <= 0) initStar(s); const scale = focalLength / s.z; const x2D = centerX + (s.x * scale); const y2D = centerY + (s.y * scale); ctx.fillStyle = s.color; ctx.globalAlpha = Math.max(0, Math.min(1, s.baseOpacity * ((maxDepth - s.z) / maxDepth))); ctx.fillRect(x2D, y2D, Math.min(s.baseSize * scale, 2.5), Math.min(s.baseSize * scale, 2.5)); } requestAnimationFrame(animate); }
+    animate();
+
+    // --- BOOK LOGIC ---
+    const flipBookEl = document.getElementById('flip-book');
+
+    const pageFlip = new St.PageFlip(flipBookEl, {
+      width: 400,
+      height: 550,
+      size: 'fixed',
+      minWidth: 400,
+      maxWidth: 400,
+      minHeight: 550,
+      maxHeight: 550,
+      showCover: true,
+      maxShadowOpacity: 0.8,
+      flippingTime: 1000,
+      usePortrait: false,
+      mode: 'double',
+      clickEventForward: true
+    });
+
+    pageFlip.loadFromHTML(document.querySelectorAll('.page'));
+
+    // Fade In BOTH the book and the first prompt together
+    gsap.to(['#flip-book', '#click-prompt'], {
+      autoAlpha: 1,
+      duration: 2,
+      delay: 1,
+      ease: "power2.inOut"
+    });
+
+    // Smart Re-centering Logic & Fade Handling for Prompts
+    pageFlip.on('flip', (e) => {
+      const pageCount = pageFlip.getPageCount();
+
+      flipBookEl.classList.remove('book-closed-front', 'book-opened', 'book-closed-back');
+
+      if (e.data === 0) {
+        // Book is completely closed on the front
+        flipBookEl.classList.add('book-closed-front');
+        gsap.to('#click-prompt', { autoAlpha: 1, duration: 0.5 }); // Show "Click to open"
+        gsap.to('#turn-prompt', { autoAlpha: 0, duration: 0.5 });  // Hide "Click to turn"
+        gsap.to('#close-prompt', { autoAlpha: 0, duration: 0.5 }); // Hide "Please close"
+        gsap.to('#thankyou-message', { autoAlpha: 0, duration: 0.5 });
+
+      } else if (e.data >= pageCount - 2) {
+        // Book is completely closed on the back
+        flipBookEl.classList.add('book-closed-back');
+        gsap.to('#click-prompt', { autoAlpha: 0, duration: 0.5 });
+        gsap.to('#turn-prompt', { autoAlpha: 0, duration: 0.5 });
+        gsap.to('#close-prompt', { autoAlpha: 0, duration: 0.5 }); // Hide when fully closed
+        gsap.to('#thankyou-message', { autoAlpha: 1, duration: 1.2, delay: 0.5 });
+
+      } else {
+        // Book is open!
+        flipBookEl.classList.add('book-opened');
+        gsap.to('#click-prompt', { autoAlpha: 0, duration: 0.5 }); // Hide "Click to open"
+        gsap.to('#thankyou-message', { autoAlpha: 0, duration: 0.5 });
+
+        // Show "Please close the book" on the last page spread
+        if (e.data >= pageCount - 4) {
+          gsap.to('#close-prompt', { autoAlpha: 1, duration: 0.8, delay: 0.3 });
+        } else {
+          gsap.to('#close-prompt', { autoAlpha: 0, duration: 0.5 });
+        }
+
+        // Show "Click to turn" ONLY if we haven't reached Page 4/5 (index 6)
+        if (e.data < 6) {
+          gsap.to('#turn-prompt', { autoAlpha: 1, duration: 0.5, delay: 0.5 });
+        } else {
+          // Once they reach page 4, fade it out forever!
+          gsap.to('#turn-prompt', { autoAlpha: 0, duration: 0.5 });
+        }
+      }
+    });
+  </script>
+</body>
+
+</html>
