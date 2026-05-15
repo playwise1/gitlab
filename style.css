@@ -42,22 +42,22 @@
   #thankyou-message {
     left: 5% !important;
     width: 90% !important;
-    top: 65% !important;
+    top: 72% !important;
   }
 
   #thankyou-message div:first-child {
-    font-size: 18px !important;
+    font-size: 11px !important;
     line-height: 1.5 !important;
   }
 
   #thankyou-message div:nth-child(2) {
-    font-size: 14px !important;
-    margin-top: 8px !important;
+    font-size: 9px !important;
+    margin-top: 4px !important;
   }
 
   #thankyou-message img {
-    width: 100px !important;
-    margin-top: 12px !important;
+    width: 55px !important;
+    margin-top: 8px !important;
   }
 }
 
