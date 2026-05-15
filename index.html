@@ -12,6 +12,7 @@
     href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Press+Start+2P&family=Cormorant+Garamond:ital,wght@1,700&display=swap"
     rel="stylesheet">
 
+  <link rel="stylesheet" href="style.css">
   <style>
     body {
       background-color: black;
@@ -109,6 +110,8 @@
       <img src="Cat_Love _GIF.gif"
         style="margin-top: 16px; width: 160px; height: auto; display: block; margin-left: auto; margin-right: auto;">
     </div>
+
+    <div id="mobile-click-overlay" class="absolute inset-0 z-40 hidden"></div>
 
     <div id="flip-book" class="book-closed-front">
 
@@ -573,7 +576,8 @@
                 style="font-family: 'Playfair Display', serif; font-size: 9.6px; line-height: 1.25; color: #2a170d; text-align: justify; padding: 0 4px; width: 100%;">
                 <p style="margin-bottom: 6px;">There are people in this world who bend under the weight of life's
                   storms, and then there is Sakina Khan — a woman who walks straight through them without so much as
-                  flinching. She is, in every sense of the word, unbreakable. What sets her apart is not merely strength — it is a rare, steel-spined
+                  flinching. She is, in every sense of the word, unbreakable. What sets her apart is not merely strength
+                  — it is a rare, steel-spined
                   fearlessness that cannot be taught, bought, or borrowed. When a task looms before her, no matter how
                   impossibly difficult, no matter how many obstacles stand in her way, Sakina does not ask whether it
                   can be done. She simply does it. Her determination is not loud or boastful; it is quiet, immovable,
@@ -587,7 +591,8 @@
                 <p>As for her haters and those who burn with jealousy at the sight of her —
                   and there will always be those, because a woman this flawless and this utterly herself will never go
                   without them — she grants them not even a glance. Their envy is, in the end, nothing more than a
-                  reluctant confession of how extraordinary she truly is. And I — I am proud of her. We all are. Every single person who has had
+                  reluctant confession of how extraordinary she truly is. And I — I am proud of her. We all are. Every
+                  single person who has had
                   the privilege of knowing her, of watching her move through this world with such grace and fire,
                   carries that pride in their chest like a quiet, glowing thing. Proud of how far she has come. Proud of
                   who she is today. Proud of who she will be tomorrow and every day beyond that, in ways none of us can
@@ -595,7 +600,8 @@
                   feeling — it is permanent, unshakeable, and it belongs to all of us who are lucky enough to call her
                   ours. Mine most of all, till the very end.<br><br>
                   <span style="font-weight: 700;">The world bends. Sakina Khan does not.</span><br>
-                  <span style="font-weight: 700; font-style: italic;">Unbreakable. Now and always.</span></p>
+                  <span style="font-weight: 700; font-style: italic;">Unbreakable. Now and always.</span>
+                </p>
               </div>
 
             </div>
@@ -703,6 +709,18 @@
     });
 
     pageFlip.loadFromHTML(document.querySelectorAll('.page'));
+
+    // Mobile specific touch handler to bypass scaling bugs in page-flip
+    document.getElementById('mobile-click-overlay').addEventListener('click', (e) => {
+      const rect = e.target.getBoundingClientRect();
+      const x = e.clientX - rect.left;
+      
+      if (x > rect.width / 2) {
+        pageFlip.flipNext();
+      } else {
+        pageFlip.flipPrev();
+      }
+    });
 
     // Fade In BOTH the book and the first prompt together
     gsap.to(['#flip-book', '#click-prompt'], {

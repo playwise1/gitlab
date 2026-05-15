@@ -1,0 +1,81 @@
+/* Mobile responsiveness for iPhone 14 (390px width) and similar devices */
+@media screen and (max-width: 480px) {
+  /* Replace zoom with scale to fix touch/click hit-box issues on mobile browsers */
+  #flip-book {
+    zoom: 1 !important;
+  }
+
+  /* Show the mobile click overlay to manually handle taps */
+  #mobile-click-overlay {
+    display: block !important;
+  }
+
+  /* Scale and center the book perfectly when closed/opened */
+  .book-closed-front {
+    transform: scale(0.42) translateX(-200px) !important;
+  }
+  .book-opened {
+    transform: scale(0.42) translateX(0) !important;
+  }
+  .book-closed-back {
+    transform: scale(0.42) translateX(200px) !important;
+  }
+
+  /* Adjust prompts for readability on small screens */
+  #click-prompt,
+  #close-prompt,
+  #turn-prompt {
+    font-size: 10px !important;
+    bottom: 12% !important;
+  }
+
+  #turn-prompt {
+    top: auto !important;
+    left: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    transform: none !important;
+    line-height: normal !important;
+  }
+
+  /* Re-center and resize the thank you message for mobile */
+  #thankyou-message {
+    left: 5% !important;
+    width: 90% !important;
+    top: 65% !important;
+  }
+
+  #thankyou-message div:first-child {
+    font-size: 18px !important;
+    line-height: 1.5 !important;
+  }
+
+  #thankyou-message div:nth-child(2) {
+    font-size: 14px !important;
+    margin-top: 8px !important;
+  }
+
+  #thankyou-message img {
+    width: 100px !important;
+    margin-top: 12px !important;
+  }
+}
+
+/* Tablet or large phone landscape mode */
+@media screen and (min-width: 481px) and (max-width: 768px) {
+  #flip-book {
+    zoom: 0.65 !important;
+  }
+
+  #thankyou-message {
+    left: 15% !important;
+    width: 70% !important;
+  }
+}
+
+/* Very small screens */
+@media screen and (max-width: 360px) {
+  #flip-book {
+    zoom: 0.38 !important;
+  }
+}
